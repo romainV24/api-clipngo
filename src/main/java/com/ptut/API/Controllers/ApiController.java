@@ -67,7 +67,7 @@ class ApiController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("\"yyyy-MM-dd HH:mm:ss\"");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("\'yyyy-MM-dd HH:mm:ss\'");
         LocalDateTime dh = LocalDateTime.parse(date,format);
         LinkedHashMap<String, Double> tab = (LinkedHashMap<String, Double>) signalement.get("position");
         PositionEntity pos = positionRepository.save(new PositionEntity(tab.get("Latitude"), tab.get("Longitude")));
