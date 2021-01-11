@@ -67,6 +67,7 @@ class ApiController {
         try {
             date = mapper.writeValueAsString(signalement.get("dhEmissions"));
         } catch (JsonProcessingException e) {
+
             e.printStackTrace();
         }
         DateTimeFormatter format = DateTimeFormatter.ofPattern("'yyyy-MM-dd HH:mm:ss'");
@@ -79,7 +80,7 @@ class ApiController {
         return ResponseEntity.ok().body(sign);
         } catch (Exception e){
             System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage()+signalement.get("dhEmissions"));
+            return ResponseEntity.badRequest().body(signalement);
         }
     }
         @PostMapping(value = "/notify_signalement",consumes = MediaType.APPLICATION_JSON_VALUE)
