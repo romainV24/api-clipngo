@@ -60,6 +60,7 @@ class ApiController {
     }
     @PostMapping(value = "/new_signalement",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addSignalements(@RequestBody JSONObject signalement) {
+        SignalementEntity sign;
         try {
         String date = "";
         ObjectMapper mapper = new ObjectMapper();
@@ -74,11 +75,11 @@ class ApiController {
         PositionEntity pos = positionRepository.save(new PositionEntity(tab.get("Latitude"), tab.get("Longitude")));
         Integer idType = (Integer) signalement.get("type");
         Optional<TypeEntity> type = typeRepository.findById(Long.valueOf(idType));
-        SignalementEntity sign = signalementRepository.save(new SignalementEntity(dh, type.get(), pos));
+        sign = signalementRepository.save(new SignalementEntity(dh, type.get(), pos));
         return ResponseEntity.ok().body(sign);
         } catch (Exception e){
             System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()+signalement.get("dhEmissions"));
         }
     }
         @PostMapping(value = "/notify_signalement",consumes = MediaType.APPLICATION_JSON_VALUE)
