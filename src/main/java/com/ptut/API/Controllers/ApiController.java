@@ -26,6 +26,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 class ApiController {
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("'yyyy-MM-dd HH:mm:ss'");
 
     @Autowired
     private IPositionRepository positionRepository;
@@ -67,7 +68,6 @@ class ApiController {
         try {
             date = mapper.writeValueAsString(signalement.get("dhEmissions"));
         } catch (JsonProcessingException e) {
-
             e.printStackTrace();
         }
         DateTimeFormatter format = DateTimeFormatter.ofPattern("'yyyy-MM-dd HH:mm:ss'");
@@ -80,7 +80,8 @@ class ApiController {
         return ResponseEntity.ok().body(sign);
         } catch (Exception e){
             System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(signalement);
+            LocalDateTime dh = LocalDateTime.parse((String) signalement.get("dhEmissions"),format);
+            return ResponseEntity.badRequest().body(dh);
         }
     }
         @PostMapping(value = "/notify_signalement",consumes = MediaType.APPLICATION_JSON_VALUE)
