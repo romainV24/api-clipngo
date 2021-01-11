@@ -79,7 +79,7 @@ class ApiController {
         return ResponseEntity.ok().body(sign);
         } catch (Exception e){
             System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(signalement);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
         @PostMapping(value = "/notify_signalement",consumes = MediaType.APPLICATION_JSON_VALUE)
