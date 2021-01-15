@@ -36,20 +36,24 @@ class ApiController {
 
     @GetMapping(value ="/signalements", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getSignalements(@RequestParam(required=false) Double[] posmax, @RequestParam(required=false) Double[] posmin) {
-        // Logger.getLogger(ApiController.class.getName()).info("api/signalement");
-        Iterable<SignalementEntity> liste = signalementRepository.findAll();
-        PositionEntity min = new PositionEntity(posmin[0],posmin[1]);
-        PositionEntity max = new PositionEntity(posmax[0],posmax[1]);
-        System.out.println(min);
-        Iterator<SignalementEntity> it = liste.iterator();
-        while (it.hasNext()){
-            if (!it.next().getPosition().compareTo(min,max))
-            {
-                it.remove();
+        if (posmax != null && posmin != null ) {
+            // Logger.getLogger(ApiController.class.getName()).info("api/signalement");
+            Iterable<SignalementEntity> liste = signalementRepository.findAll();
+            PositionEntity min = new PositionEntity(posmin[0], posmin[1]);
+            PositionEntity max = new PositionEntity(posmax[0], posmax[1]);
+            System.out.println(min);
+            Iterator<SignalementEntity> it = liste.iterator();
+            while (it.hasNext()) {
+                if (!it.next().getPosition().compareTo(min, max)) {
+                    it.remove();
+                }
             }
+            System.out.println(min + " - " + max);
+            return ResponseEntity.ok().body(liste);
+        } else {
+            Iterable<SignalementEntity> liste = signalementRepository.findAll();
+            return ResponseEntity.ok().body(liste);
         }
-        System.out.println(min+" - "+max);
-        return ResponseEntity.ok().body(liste);
     }
     @PostMapping(value ="/signalements", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> postSignalements(@RequestBody JSONObject position) {
