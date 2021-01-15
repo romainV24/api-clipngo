@@ -39,8 +39,8 @@ class ApiController {
         if (posmax != null && posmin != null ) {
             // Logger.getLogger(ApiController.class.getName()).info("api/signalement");
             Iterable<SignalementEntity> liste = signalementRepository.findAll();
-            PositionEntity min = new PositionEntity(posmin[1], posmin[0]);
-            PositionEntity max = new PositionEntity(posmax[1], posmax[0]);
+            PositionEntity min = new PositionEntity(posmin[0], posmin[1]);
+            PositionEntity max = new PositionEntity(posmax[0], posmax[1]);
             System.out.println(min);
             Iterator<SignalementEntity> it = liste.iterator();
             while (it.hasNext()) {
