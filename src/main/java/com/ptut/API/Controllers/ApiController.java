@@ -35,19 +35,12 @@ class ApiController {
     private ITypeRepository typeRepository;
 
     @GetMapping(value ="/signalements", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getSignalements() {
+    public ResponseEntity<?> getSignalements(@RequestParam(required=false) Double[] posmax, @RequestParam(required=false) Double[] posmin) {
         // Logger.getLogger(ApiController.class.getName()).info("api/signalement");
         Iterable<SignalementEntity> liste = signalementRepository.findAll();
-
-        return ResponseEntity.ok().body(liste);
-    }
-    @PostMapping(value ="/signalements", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> postSignalements(@RequestBody JSONObject position) {
-        LinkedHashMap<String, Double> tab = (LinkedHashMap<String, Double>) position.get("pos_min");
-        PositionEntity min = new PositionEntity(tab.get("latitude"), tab.get("longitude"));
-        LinkedHashMap<String, Double> tab2 = (LinkedHashMap<String, Double>) position.get("pos_max");
-        PositionEntity max = new PositionEntity(tab2.get("latitude"), tab2.get("longitude"));
-        Iterable<SignalementEntity> liste = signalementRepository.findAll();
+        PositionEntity min = new PositionEntity(posmin[0],posmin[1]);
+        PositionEntity max = new PositionEntity(posmax[0],posmax[1]);
+        System.out.println(min);
         Iterator<SignalementEntity> it = liste.iterator();
         while (it.hasNext()){
             if (!it.next().getPosition().compareTo(min,max))
@@ -58,7 +51,25 @@ class ApiController {
         System.out.println(min+" - "+max);
         return ResponseEntity.ok().body(liste);
     }
+    @PostMapping(value ="/signalements", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> postSignalements(@RequestBody JSONObject position) {
+        LinkedHashMap<String, Double> tab = (LinkedHashMap<String, Double>) position.get("pos_min");
+        PositionEntity min = new PositionEntity(tab.get("latitude"), tab.get("longitude"));
+        LinkedHashMap<String, Double> tab2 = (LinkedHashMap<String, Double>) position.get("pos_max");
+        PositionEntity max = new PositionEntity(tab2.get("latitude"), tab2.get("longitude"));
+        Iterable<SignalementEntity> liste2 = signalementRepository.findAll();
+        Iterator<SignalementEntity> it = liste2.iterator();
+        while (it.hasNext()){
+            if (!it.next().getPosition().compareTo(min,max))
+            {
+                it.remove();
+            }
+        }
+        System.out.println(min+" - "+max);
+        return ResponseEntity.ok().body(liste2);
+    }
     @PostMapping(value = "/new_signalement",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //error parsing
     public ResponseEntity<?> addSignalements(@RequestBody JSONObject signalement) {
         SignalementEntity sign;
         try {
