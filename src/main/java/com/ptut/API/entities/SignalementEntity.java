@@ -2,10 +2,7 @@ package com.ptut.API.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.ptut.API.LocalDateDeserializer;
-import com.ptut.API.LocalDateSerializer;
 
 import org.springframework.lang.NonNull;
 
