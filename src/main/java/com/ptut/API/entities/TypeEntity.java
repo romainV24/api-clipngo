@@ -8,6 +8,9 @@ import java.io.Serializable;
 @Entity
 @Table(name="type")
 public class TypeEntity implements Serializable {
+
+    private static final long serialVersionUID = -5725637192747401821L;
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @JsonProperty("id")
@@ -23,4 +26,5 @@ public class TypeEntity implements Serializable {
     public String getLibelle() {
         return libelle;
     }
+    
 }

@@ -7,100 +7,82 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.ptut.API.LocalDateDeserializer;
 import com.ptut.API.LocalDateSerializer;
 
+import org.springframework.lang.NonNull;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Calendar;
+import java.util.Date;
 
 @Entity
 @Table(name="signalement")
 public class SignalementEntity implements Serializable {
 
-    public SignalementEntity(){}
-    public SignalementEntity(LocalDateTime date,TypeEntity type, PositionEntity position){
-        this.dhEmissions = date;
-        this.position = position;
+    private static final long serialVersionUID = 3940613599913440629L;
+    private static final int EXPIRATION = 2; // Expiration de 24 H
+
+    public SignalementEntity() {}
+    public SignalementEntity(TypeEntity type, double latitude, double longitude){
+        this.id = 0;
+        this.dhEmissions = new Date();
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.type = type;
-        this.nbValidations = 1;
+        this.nbValidations = 0;
         this.nbAnnulations = 0;
     }
 
     @Id
+    @NonNull
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long ID;
-    public long getID() {
-        return ID;
-    }
-
-    public void setID(long ID) {
-        this.ID = ID;
-    }
+    private long id;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
     @Column(name = "dh_emissions")
     @JsonProperty("dhEmissions")
-    private LocalDateTime dhEmissions;
-    public LocalDateTime getDhEmissions() {
-        return dhEmissions;
-    }
+    private Date dhEmissions;
+    @JsonProperty
+    private double latitude;
+    @JsonProperty
+    private double longitude;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id")
+    @JsonSerialize
+    private TypeEntity type;
 
-    public void setDhEmissions(LocalDateTime dhEmissions) {
-        this.dhEmissions = dhEmissions;
-    }
     @Column(name = "nb_Validations")
     @JsonProperty("nbValidations")
     private int nbValidations;
-
-
-    public int getNbValidations() {
-        return nbValidations;
-    }
-
-    public void setNbValidations(int nbValidations) {
-        this.nbValidations = nbValidations;
-    }
-
 
     @Column(name = "nb_Annulations")
     @JsonProperty("nbAnnulations")
     private int nbAnnulations;
 
-    public int getNbAnnulations() {
-        return nbAnnulations;
-    }
-
-    public void setNbAnnulations(int nbAnnulations) {
-        this.nbAnnulations = nbAnnulations;
-    }
-
-    @ManyToOne( optional = true)
-    @JoinColumn(name = "type_id",nullable = false)
-    private TypeEntity type;
-
-    public TypeEntity getType() {
-        return type;
-    }
-
-    public void setType(TypeEntity type) {
-        this.type = type;
-    }
-
-    @OneToOne
-    @JsonProperty("position")
-    private PositionEntity position;
-
-    public PositionEntity getPosition() {
-        return position;
-    }
-
-    public void setPosition(PositionEntity position) {
-        this.position = position;
-    }
-
     @Override
     public String toString() {
-        return "id:"+ID+"\n date:"+dhEmissions.toString()+"\n nbA:"+nbAnnulations+"\n nbV:"+nbValidations+"\n type:"+type.getLibelle()+"\n position: "+position.getId() ;
+        return String.format("{ id:%d, latitude:%d, longitude:%d, nb_validation:%d, nb_annulation:%d }", id, latitude, longitude, nbValidations, nbAnnulations);
+    }
+
+    public void validation() {
+        this.nbValidations++;
+        this.dhEmissions = new Date();
+    }
+
+    public void annulation() {
+        this.nbAnnulations++;
+    }
+
+    public boolean suppression() {
+        if(this.nbAnnulations >= this.nbValidations) {
+            return true;
+        }
+        // Verification de l'expiration du signalement
+        Calendar duration = Calendar.getInstance();
+        duration.setTime(this.dhEmissions);
+        duration.add(Calendar.MINUTE, EXPIRATION);
+        if(duration.getTime().before(new Date())) {
+            return true;
+        }
+        return false;
     }
 }

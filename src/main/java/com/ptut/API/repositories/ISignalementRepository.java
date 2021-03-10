@@ -1,10 +1,22 @@
 package com.ptut.API.repositories;
 
+import java.util.List;
 import com.ptut.API.entities.SignalementEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ISignalementRepository extends CrudRepository<SignalementEntity, Long>{
+
+    @Query(value = "SELECT * FROM signalement "
+                 + "WHERE latitude >= ?1 AND latitude <= ?3 "
+                 + "AND longitude >= ?2 AND longitude <= ?4", nativeQuery = true)
+    List<SignalementEntity> findAllByZone(double minLatitude, double minLongitude, double maxLatitude, double maxLongitude);
+
+    @Query(value = "SELECT * FROM signalement "
+                 + "WHERE type_id = ?1 AND latitude = ?2 "
+                 + "AND longitude = ?3 LIMIT 1", nativeQuery = true)
+    SignalementEntity findByTypeAndPosition(long type, double latitude, double longitude);
 
 }
