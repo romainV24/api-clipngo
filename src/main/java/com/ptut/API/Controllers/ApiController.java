@@ -62,7 +62,6 @@ class ApiController {
                 signalements = signalementRepository.findAllByZone(posMin.getLat(), posMin.getLong(), posMax.getLat(), posMax.getLong());
             }
         }
-        System.out.println("get");
         return signalements;
     }
 
