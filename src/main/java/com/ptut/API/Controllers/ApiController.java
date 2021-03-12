@@ -3,6 +3,7 @@ package com.ptut.API.Controllers;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import javax.swing.text.Position;
 
@@ -61,6 +62,7 @@ class ApiController {
                 signalements = signalementRepository.findAllByZone(posMin.getLat(), posMin.getLong(), posMax.getLat(), posMax.getLong());
             }
         }
+        System.out.println("get");
         return signalements;
     }
 
