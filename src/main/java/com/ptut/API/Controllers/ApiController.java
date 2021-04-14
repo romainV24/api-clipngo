@@ -71,14 +71,30 @@ class ApiController {
      */
     @PostMapping(value = "/signalement", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void postSignalement(@RequestBody SignalementDto signalementDto) {
-        SignalementEntity signalement = signalementRepository.findByTypeAndPosition(signalementDto.getType(), signalementDto.getLatitude(), signalementDto.getLongitude());
-        if(signalement == null) {
-            Optional<TypeEntity> type = typeRepository.findById(signalementDto.getType());
+
+        // on recherche les signalements à -10m de la position
+        var signalements = signalementRepository.findByZoneAndPosition(
+                signalementDto.getLatitude() - 0.00005 ,
+                signalementDto.getLongitude() - 0.00005 ,
+                signalementDto.getLatitude() + 0.00005,
+                signalementDto.getLatitude() + 0.00005
+                signalementDto.getType());
+
+        if (signalements.isEmpty() || signalements == null){
+            System.out.println(signalements)
+             Optional<TypeEntity> type = typeRepository.findById(signalementDto.getType());
             if(!type.isPresent()) {
                 throw new IllegalArgumentException("Le type est incorrect");
             }
             signalement = new SignalementEntity(type.get(), signalementDto.getLatitude(), signalementDto.getLongitude());
         }
+
+        //il existe 1 signalement
+
+        if (signalements.size() == 1)
+            {
+            signalement = signalements
+            }
         // Si c'est une annulation on decremente le compteur d'annulation et on incremente le compteur de validation
         // sinon on fait l'inverse
         if(signalementDto.isValidation()) {
